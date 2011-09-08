@@ -1,0 +1,4 @@
+cron:
+- description: Send info
+  url: /update
+  schedule: every 1 minutes
