@@ -46,8 +46,7 @@ class UpdateInfo(webapp.RequestHandler):
 
 
 class ChannelConnection(webapp.RequestHandler):
-    def get(self, type):
-        return
+    def post(self, type):
         type = type.strip('/')
 
 
