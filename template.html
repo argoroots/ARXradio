@@ -9,7 +9,7 @@
         <link rel="icon" href="rrr.png" sizes="64x64" type="image/png" />
         <link rel="apple-touch-icon" href="rrr.png" sizes="64x64" type="image/png" />
         <style type="text/css" media="screen, print">
-            html, body, a, hr, audio, video {
+            html, body, a, hr, img, audio, video {
                 -webkit-text-size-adjust: none;
                 margin: 0px;
                 padding: 0px;
@@ -185,8 +185,12 @@
                     window.fluid.dockBadge = '';
                 }
 
-                if (window.fluid || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || !navigator.userAgent.match(/Mac/i)) $('#app_link').hide();
-                if (navigator.userAgent.match(/Safari/i)) $('#safari_link').hide();
+                if (window.fluid || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
+                    $('#app_link').hide();
+                    $('#safari_link').hide();
+                };
+                if (window.fluid || !navigator.userAgent.match(/Mac/i)) $('#app_link').hide();
+                if ((navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/Chrome/i))) $('#safari_link').hide();
             });
 
         </script>

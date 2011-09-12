@@ -31,7 +31,7 @@ class UpdateInfo(webapp.RequestHandler):
         json['tallinn'] = get_info('http://otse.err.ee/xml/live-raadiotallinn.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
 
         json['elmar']   = get_info('http://www.elmar.ee/', '<div class="onair">', '</div>')
-        json['kuku']    = get_info('http://www.kuku.ee/', '<span class="pealkiri">Hetkel eetris</span>', '<span class="host_names">')
+        json['kuku']    = get_info('http://www.kuku.ee/', '<span class="pealkiri">Hetkel eetris</span>', '</a>')
         json['mania']   = get_info('http://www.mania.ee/eeter.php?rnd='+str(randint(1, 1000000)), '<font color=\'ffffff\'>', '</font>')
         json['sky']     = get_info('http://www.skyplus.fm/ram/nowplaying_main.html?rnd='+str(randint(1, 1000000)), '<span class="hetkeleetris">', '</span>')
         json['r3']      = get_info('http://www.raadio3.ee/ram/nowplaying_main.html?rnd='+str(randint(1, 1000000)), '<span class="eetris2">', '</body>')
