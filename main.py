@@ -1,51 +1,52 @@
 import os
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import util
-from google.appengine.ext.webapp import template
+import webapp2
+import jinja2
+import json
+import random
+
 from google.appengine.api import channel
 from google.appengine.api import urlfetch
 from BeautifulSoup import BeautifulStoneSoup
 from BeautifulSoup import *
-from django.utils import simplejson
-from random import randint
 
 
-class ShowPage(webapp.RequestHandler):
+class ShowPage(webapp2.RequestHandler):
     def get(self):
         token = channel.create_channel('raadio')
-        path = os.path.join(os.path.dirname(__file__), 'template.html')
-        self.response.out.write(template.render(path, {'token': token}))
+        jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__))))
+        template = jinja_environment.get_template('template.html')
+        self.response.out.write(template.render({'token': token}))
 
 
-class UpdateInfo(webapp.RequestHandler):
+class UpdateInfo(webapp2.RequestHandler):
     def get(self):
-        json = {}
+        json_dict = {}
 
-        json['etv']     = get_info('http://otse.err.ee/xml/live-etv.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
-        json['etv2']    = get_info('http://otse.err.ee/xml/live-etv2.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
+        json_dict['etv']     = get_info('http://otse.err.ee/xml/live-etv.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
+        json_dict['etv2']    = get_info('http://otse.err.ee/xml/live-etv2.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
 
-        json['viker']   = get_info('http://otse.err.ee/xml/live-vikerraadio.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
-        json['klassika']= get_info('http://otse.err.ee/xml/live-klassikaraadio.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
-        json['r2']      = get_info('http://otse.err.ee/xml/live-r2.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
-        json['r4']      = get_info('http://otse.err.ee/xml/live-r4.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
-        json['tallinn'] = get_info('http://otse.err.ee/xml/live-raadiotallinn.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
+        json_dict['viker']   = get_info('http://otse.err.ee/xml/live-vikerraadio.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
+        json_dict['klassika']= get_info('http://otse.err.ee/xml/live-klassikaraadio.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
+        json_dict['r2']      = get_info('http://otse.err.ee/xml/live-r2.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
+        json_dict['r4']      = get_info('http://otse.err.ee/xml/live-r4.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
+        json_dict['tallinn'] = get_info('http://otse.err.ee/xml/live-raadiotallinn.html', '$(\'#onair\').html(\'', '\');$(\'#onairdesc')
 
-        json['elmar']   = get_info('http://www.elmar.ee/', '<div class="onair">', '</div>')
-        json['kuku']    = get_info('http://www.kuku.ee/', '<span class="pealkiri">Hetkel eetris</span>', '</a>')
-        json['mania']   = get_info('http://www.mania.ee/eeter.php?rnd='+str(randint(1, 1000000)), '<font color=\'ffffff\'>', '</font>')
-        json['sky']     = get_info('http://www.skyplus.fm/ram/nowplaying_main.html?rnd='+str(randint(1, 1000000)), '<span class="hetkeleetris">', '</span>')
-        json['r3']      = get_info('http://www.raadio3.ee/ram/nowplaying_main.html?rnd='+str(randint(1, 1000000)), '<span class="eetris2">', '</body>')
-        json['star']    = get_info('http://rds.starfm.ee/jsonRdsInfo.php?Name=Star&rnd='+str(randint(1, 1000000)), '({"currentArtist":"', '","nextArtist"').replace('","currentSong":"', ' - ')
-        json['power']   = get_info('http://rds.power.ee/jsonRdsInfo.php?Name=Power&rnd='+str(randint(1, 1000000)), '({"currentArtist":"', '","nextArtist"').replace('","currentSong":"', ' - ')
+        json_dict['elmar']   = get_info('http://www.elmar.ee/', '<div class="onair">', '</div>')
+        json_dict['kuku']    = get_info('http://www.kuku.ee/', '<span class="pealkiri">Hetkel eetris</span>', '</a>')
+        json_dict['mania']   = get_info('http://www.mania.ee/eeter.php?rnd='+str(random.randint(1, 1000000)), '<font color=\'ffffff\'>', '</font>')
+        json_dict['sky']     = get_info('http://www.skyplus.fm/ram/nowplaying_main.html?rnd='+str(random.randint(1, 1000000)), '<span class="hetkeleetris">', '</span>')
+        json_dict['r3']      = get_info('http://www.raadio3.ee/ram/nowplaying_main.html?rnd='+str(random.randint(1, 1000000)), '<span class="eetris2">', '</body>')
+        json_dict['star']    = get_info('http://rds.starfm.ee/jsonRdsInfo.php?Name=Star&rnd='+str(random.randint(1, 1000000)), '({"currentArtist":"', '","nextArtist"').replace('","currentSong":"', ' - ')
+        json_dict['power']   = get_info('http://rds.power.ee/jsonRdsInfo.php?Name=Power&rnd='+str(random.randint(1, 1000000)), '({"currentArtist":"', '","nextArtist"').replace('","currentSong":"', ' - ')
 
-        json_str = simplejson.dumps(json)
+        json_str = json.dumps(json_dict)
         channel.send_message('raadio', json_str)
 
         self.response.headers['Content-type'] = 'application/json'
         self.response.out.write(json_str)
 
 
-class ChannelConnection(webapp.RequestHandler):
+class ChannelConnection(webapp2.RequestHandler):
     def post(self, type):
         type = type.strip('/')
 
@@ -59,14 +60,8 @@ def get_info(url, before, after):
         return ''
 
 
-def main():
-    application = webapp.WSGIApplication([
+app = webapp2.WSGIApplication([
         ('/', ShowPage),
         ('/update', UpdateInfo),
         ('/_ah/channel/(.*)', ChannelConnection),
     ], debug=True)
-    util.run_wsgi_app(application)
-
-
-if __name__ == '__main__':
-    main()
