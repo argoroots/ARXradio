@@ -1,6 +1,6 @@
 indexes:
-- kind: RSS
+- kind: Archive
   properties:
-  - name: show
+  - name: group
   - name: date
     direction: desc

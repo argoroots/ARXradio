@@ -4,5 +4,5 @@ cron:
   schedule: every 1 minutes
 
 - description: Get RSS
-  url: /update_rss
+  url: /archive/update
   schedule: every 60 minutes

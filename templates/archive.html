@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="et">
+    <head>
+        <meta charset="utf-8" />
+        <title>ARX-Raadio</title>
+        <meta name="author" content="Argo Roots" />
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width" />
+        <link rel="icon" href="rrr.png" sizes="64x64" type="image/png" />
+        <link rel="apple-touch-icon" href="rrr.png" sizes="64x64" type="image/png" />
+        <link rel="stylesheet" href="//get.pictos.cc/fonts/261/5" />
+        <style type="text/css" media="screen, print">
+            html, body, a, hr, img, audio, video {
+                -webkit-text-size-adjust: none;
+                margin: 0px;
+                padding: 0px;
+                border: none;
+            }
+            body {
+                max-width: 500px;
+                margin: 0px auto;
+                font-family: Georgia, Times, serif;
+                font-size: 20px;
+                text-align: left;
+                background: #E8E8E8;
+            }
+            a.archive_link {
+                background: #E8E8E8;
+                padding-top: 20px;
+            }
+            #app_link {
+                background: #E8E8E8;
+            }
+            #safari_link {
+                margin-top: 7px;
+                font-size: 12px;
+                background: #E8E8E8;
+            }
+            a {
+                display: block;
+                width: 100%;
+                margin-bottom: 1px;
+                padding: 10px 0px;
+                text-align: center;
+                text-decoration: none;
+                color: #525252;
+                background: #FFFFFF;
+            }
+            a span {
+                display: block;
+                font-size: 13px;
+                color: #A4A4A4;
+            }
+            a.selected {
+                font-weight: bold;
+                color: #4096EE;
+                background-color: #FDFDFD;
+            }
+            hr {
+                height: 0px;
+                padding: 3px;
+            }
+            audio {
+                height: 0px;
+                width: 0px;
+            }
+            video {
+                display: block;
+                width: 100%;
+                margin-top: 7px;
+                margin-bottom: 1px;
+            }
+            [data-icon]:before {
+                font-family: 'Pictos Custom';
+                font-size: 30px;
+                content: attr(data-icon);
+                -webkit-font-smoothing: antialiased;
+            }
+        </style>
+        <script type="text/javascript" src="/_ah/channel/jsapi"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-260765-20']);
+            _gaq.push(['_trackPageview']);
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+        </script>
+    </head>
+    <body>
+        <a class="archive_link" href="{{ back }}" data-icon="B"></a>
+        <video id="video" src="/" style="display:none;" controls></video>
+        <audio id="audio" src="/" style="display:none;"></audio>
+        <hr />
+
+        {% for i in items %}
+        <a class="{% if i.is_video %}play{% endif %}" href="{{ i.url }}" data-type="video" id="etv">{{ i.title }}<span>{{ i.date }}</span></a>
+        {% endfor %}
+
+        <hr />
+        <a id="safari_link" href="http://www.apple.com/safari" >ARX-Raadio töötab <del>paremini</del> ainult Safari brauseriga.</a>
+        <a id="app_link" data-icon="D" href="http://cl.ly/033Y2K1n1c113c2K0E2v/ARX-Raadio.app.zip" title="Tõmba OS X rakendus"></a>
+        <script>
+            jQuery.fn.justtext = function() {
+                return $(this).clone().children().remove().end().text();
+            };
+
+            $(document).ready(function(){
+                function Play(type, url, title, badge) {
+                    $('#video')[0].pause();
+                    $('#audio')[0].pause();
+                    $('#video').hide();
+
+                    if (type=='audio') player = $("#audio");
+                    if (type=='video') player = $("#video");
+                    if (type=='video') window.scrollTo(0, 0);
+
+                    $('a.selected').removeClass('selected');
+
+                    if(player.attr('src') == url) {
+                        player.attr('src', '');
+                        if(window.fluid) window.fluid.dockBadge = '';
+                    } else {
+                        $('a[href$="'+url+'"]').addClass('selected');
+                        if (type=='video') player.show();
+                        player.attr('src', url);
+                        player[0].play();
+                    }
+                };
+
+                $('a.play').click(function(){
+                    event.preventDefault();
+                    link = $(this);
+                    Play(link.data('type'), link.attr('href'), link.justtext(), link.attr('id'));
+                });
+
+                if (window.fluid || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
+                    $('#app_link').hide();
+                    $('#safari_link').hide();
+                };
+                if (window.fluid || !navigator.userAgent.match(/Mac/i)) $('#app_link').hide();
+                if ((navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/Chrome/i))) $('#safari_link').hide();
+            });
+
+        </script>
+    </body>
+</html>

@@ -16,24 +16,27 @@ inbound_services:
 
 handlers:
 - url: /favicon.ico
-  static_files: rrr.png
-  upload: rrr.png
+  static_files: images/rrr.png
+  upload: images/rrr.png
   expiration: "90d"
 
 - url: /rrr.png
-  static_files: rrr.png
-  upload: rrr.png
+  static_files: images/rrr.png
+  upload: images/rrr.png
   expiration: "90d"
 
 - url: /apple-touch-icon.png
-  static_files: rrr.png
-  upload: rrr.png
+  static_files: images/rrr.png
+  upload: images/rrr.png
   expiration: "90d"
 
 - url: /safari.png
-  static_files: safari.png
-  upload: safari.png
+  static_files: images/safari.png
+  upload: images/safari.png
   expiration: "90d"
 
+- url: /archive.*
+  script: scripts.archive.app
+
 - url: .*
-  script: main.app
+  script: scripts.radio.app

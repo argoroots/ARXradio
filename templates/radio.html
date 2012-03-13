@@ -8,6 +8,7 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width" />
         <link rel="icon" href="rrr.png" sizes="64x64" type="image/png" />
         <link rel="apple-touch-icon" href="rrr.png" sizes="64x64" type="image/png" />
+        <link rel="stylesheet" href="//get.pictos.cc/fonts/261/5" />
         <style type="text/css" media="screen, print">
             html, body, a, hr, img, audio, video {
                 -webkit-text-size-adjust: none;
@@ -23,13 +24,16 @@
                 text-align: left;
                 background: #E8E8E8;
             }
+            a.archive_link {
+                background: #E8E8E8;
+                padding-top: 20px;
+            }
             #app_link {
                 background: #E8E8E8;
             }
             #safari_link {
                 margin-top: 7px;
-                font-size: 16px;
-                color: #990000;
+                font-size: 12px;
                 background: #E8E8E8;
             }
             a {
@@ -66,6 +70,12 @@
                 margin-top: 7px;
                 margin-bottom: 1px;
             }
+            [data-icon]:before {
+                font-family: 'Pictos Custom';
+                font-size: 30px;
+                content: attr(data-icon);
+                -webkit-font-smoothing: antialiased;
+            }
         </style>
         <script type="text/javascript" src="/_ah/channel/jsapi"></script>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
@@ -81,12 +91,12 @@
         </script>
     </head>
     <body>
-        <a id="safari_link" href="http://www.apple.com/safari" ><img src="/safari.png" width="100" height="100" /><br />ARX-Raadio töötab <del>paremini</del> ainult Safari brauseriga.</a>
         <video id="video" src="/" style="display:none;" controls></video>
         <audio id="audio" src="/" style="display:none;"></audio>
         <hr />
-        <a class="play" href="http://193.40.133.138:1935/live/etvm/playlist.m3u8" data-type="video" id="etv">ETV<span></span></a>
-        <a class="play" href="http://193.40.133.138:1935/live/etv2m/playlist.m3u8" data-type="video" id="etv2">ETV 2<span></span></a>
+        <a class="play" href="http://193.40.133.138:1935/live/etv/playlist.m3u8" data-type="video" id="etv">ETV<span></span></a>
+        <a class="play" href="http://193.40.133.138:1935/live/etv2/playlist.m3u8" data-type="video" id="etv2">ETV 2<span></span></a>
+        <a href="/archive" data-icon="H"><span>Arhiiv</span></a>
         <hr />
         <a class="play" href="http://193.40.133.138:1935/live/vikerraadio/playlist.m3u8" data-type="audio" id="viker">Vikerraadio<span></span></a>
         <a class="play" href="http://193.40.133.138:1935/live/klassikaraadio/playlist.m3u8" data-type="audio" id="klassika">Klassikaraadio<span></span></a>
@@ -113,7 +123,8 @@
         <a class="play" href="http://www.netiraadio.ee:8000/teistsugune" data-type="audio" id="teistsugune">Teistsugune<span></span></a>
         <a class="play" href="http://www.netiraadio.ee:8000/tumedadlood" data-type="audio" id="tume">Tumedad lood<span></span></a>
         <hr />
-        <a id="app_link" href="http://cl.ly/033Y2K1n1c113c2K0E2v/ARX-Raadio.app.zip">Tõmba OS X rakendus</a>
+        <a id="safari_link" href="http://www.apple.com/safari" >ARX-Raadio töötab <del>paremini</del> ainult Safari brauseriga.</a>
+        <a id="app_link" data-icon="D" href="http://cl.ly/033Y2K1n1c113c2K0E2v/ARX-Raadio.app.zip" title="Tõmba OS X rakendus"></a>
         <script>
             window.addEventListener('load', function() {
                 setTimeout(scrollTo, 0, 0, 1);
