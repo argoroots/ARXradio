@@ -1,11 +1,16 @@
+# -*- coding: utf-8 -*-
+
 import os
 import webapp2
 import jinja2
 import json
 import random
+from datetime import *
 
+from google.appengine.ext import db
 from google.appengine.api import channel
 from google.appengine.api import urlfetch
+
 from BeautifulSoup import BeautifulStoneSoup
 from BeautifulSoup import *
 
@@ -51,6 +56,78 @@ class ChannelConnection(webapp2.RequestHandler):
         type = type.strip('/')
 
 
+class RSS(db.Model):
+    channel = db.StringProperty()
+    show    = db.StringProperty()
+    date    = db.DateTimeProperty()
+    title   = db.StringProperty()
+    url     = db.StringProperty()
+
+
+class ShowRSS(webapp2.RequestHandler):
+    def get(self, show):
+        show = show.strip('/')
+        items = db.Query(RSS)
+        if show:
+            items = db.Query(RSS).filter('show', show).order('-date').fetch(100)
+        else:
+            items = db.Query(RSS).order('-date').fetch(100)
+        for i in items:
+            i.sdate = i.date.strftime('%a, %d %b %Y %H:%M:%S +0000')
+            i.url = 'http://%s/playlist.m3u8' % i.url.replace('rtsp://', '')
+        jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__))))
+        template = jinja_environment.get_template('rss.xml')
+        self.response.out.write(template.render({
+            'items': items,
+            'show': '/%s' % show if show else ''
+        }))
+
+
+class UpdateRSS(webapp2.RequestHandler):
+    def get(self):
+        shows = {
+            'ajavaod':           'ajavaod',
+            'aktuaalne kaamera': 'ak',
+            'arktikast antarktikasse': 'antarktikasse',
+            'batareja':          'batareja',
+            'eesti lood':        'eestilood',
+            'jüri üdi klubi':    'jyriydi',
+            'kapital':           'kapital',
+            'nöbinina':          'nobinina',
+            'osoon':             'osoon',
+            'pealtnägija':       'pealtnagija',
+            'puutepunkt':        'puutepunkt',
+            'ringvaade':         'ringvaade',
+            'teatrivara':        'teater',
+            'telelavastus':      'teater',
+            'lastelavastus':     'teater',
+            'terevisioon':       'terevisioon',
+            'välisilm':          'valisilm',
+            'õnne 13':           'onne13',
+        }
+        for channel, channel_url in {'ETV':'http://m.err.ee/arhiiv/etv/', 'ETV2':'http://m.err.ee/arhiiv/etv2/'}.iteritems():
+            soup = BeautifulSoup(urlfetch.fetch(channel_url, deadline=60).content)
+            for i in soup.findAll('a', attrs={'class': 'releated jqclip'}):
+                url = i['href'].replace('\n', '').strip()
+                title = i.contents[0].replace('\n', '').strip()
+                date = datetime.strptime(i.find('span').contents[0].replace('\n', '').strip(), '%H:%M | %d.%m.%Y')
+                show = ''
+                for s, u in shows.iteritems():
+                    if title.lower().find(s.decode('utf-8')) > -1:
+                        show = u
+                        break
+
+                row = db.Query(RSS).filter('channel', channel).filter('date', date).filter('title', title).filter('url', url).get()
+                if not row:
+                    row = RSS()
+                    row.channel = channel
+                    row.show = show
+                    row.date = date
+                    row.title = title
+                    row.url = url
+                    row.put()
+
+
 def get_info(url, before, after):
     try:
         string = urlfetch.fetch(url, deadline=10).content.split(before)[1].split(after)[0].decode('utf-8')
@@ -64,4 +141,6 @@ app = webapp2.WSGIApplication([
         ('/', ShowPage),
         ('/update', UpdateInfo),
         ('/_ah/channel/(.*)', ChannelConnection),
+        ('/rss_update', UpdateRSS),
+        ('/rss(.*)', ShowRSS),
     ], debug=True)

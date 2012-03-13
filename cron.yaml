@@ -2,3 +2,7 @@ cron:
 - description: Send info
   url: /update
   schedule: every 1 minutes
+
+- description: Get RSS
+  url: /update_rss
+  schedule: every 60 minutes

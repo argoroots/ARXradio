@@ -1,1 +1,6 @@
 indexes:
+- kind: RSS
+  properties:
+  - name: show
+  - name: date
+    direction: desc
