@@ -96,7 +96,7 @@
         <hr />
         <a class="play" href="http://193.40.133.138:1935/live/etv/playlist.m3u8" data-type="video" id="etv">ETV<span></span></a>
         <a class="play" href="http://193.40.133.138:1935/live/etv2/playlist.m3u8" data-type="video" id="etv2">ETV 2<span></span></a>
-        <a href="/archive" data-icon="A"><span>Arhiiv</span></a>
+        <a class="to_archive" href="/archive" data-icon="A"><span>Arhiiv</span></a>
         <hr />
         <a class="play" href="http://193.40.133.138:1935/live/vikerraadio/playlist.m3u8" data-type="audio" id="viker">Vikerraadio<span></span></a>
         <a class="play" href="http://193.40.133.138:1935/live/klassikaraadio/playlist.m3u8" data-type="audio" id="klassika">Klassikaraadio<span></span></a>
@@ -179,6 +179,11 @@
                     event.preventDefault();
                     link = $(this);
                     Play(link.data('type'), link.attr('href'), link.justtext(), link.attr('id'));
+                });
+
+                $("a.to_archive").click(function (event) {
+                    event.preventDefault();
+                    window.location = $(this).attr("href");
                 });
 
                 if (window.fluid) {

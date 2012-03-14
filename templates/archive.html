@@ -143,6 +143,11 @@
                     Play(link.data('type'), link.attr('href'), link.justtext(), link.attr('id'));
                 });
 
+                $("a.archive_link").click(function (event) {
+                    event.preventDefault();
+                    window.location = $(this).attr("href");
+                });
+
                 if (window.fluid || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
                     $('#app_link').hide();
                     $('#safari_link').hide();
