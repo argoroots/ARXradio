@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="et">
     <head>
         <meta charset="utf-8" />
@@ -24,18 +25,6 @@
                 text-align: left;
                 background: #E8E8E8;
             }
-            a.archive_link {
-                background: #E8E8E8;
-                padding-top: 20px;
-            }
-            #app_link {
-                background: #E8E8E8;
-            }
-            #safari_link {
-                margin-top: 7px;
-                font-size: 12px;
-                background: #E8E8E8;
-            }
             a {
                 display: block;
                 width: 100%;
@@ -56,6 +45,9 @@
                 color: #4096EE;
                 background-color: #FDFDFD;
             }
+            a.transparent {
+                background: #E8E8E8;
+            }
             hr {
                 height: 0px;
                 padding: 3px;
@@ -72,12 +64,12 @@
             }
             [data-icon]:before {
                 font-family: 'Pictos Custom';
-                font-size: 30px;
+                font-size: 26px;
                 content: attr(data-icon);
                 -webkit-font-smoothing: antialiased;
             }
         </style>
-        <script type="text/javascript" src="/_ah/channel/jsapi"></script>
+        {% if token %}<script type="text/javascript" src="/_ah/channel/jsapi"></script>{% endif %}
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
         <script type="text/javascript">
             var _gaq = _gaq || [];
@@ -91,40 +83,21 @@
         </script>
     </head>
     <body>
+        <a id="safari_link" class="transparent" href="http://www.apple.com/safari" style="padding:3px; font-size:12px; display:none;">ARX-Raadio töötab <del>paremini</del> ainult Safari brauseriga.</a>
+        {% if back %}<a class="transparent" href="{{ back }}" data-icon="<" style="padding-top:20px;"></a>{% endif %}
         <video id="video" src="/" style="display:none;" controls></video>
         <audio id="audio" src="/" style="display:none;"></audio>
         <hr />
-        <a class="play" href="http://193.40.133.138:1935/live/etv/playlist.m3u8" data-type="video" id="etv">ETV<span></span></a>
-        <a class="play" href="http://193.40.133.138:1935/live/etv2/playlist.m3u8" data-type="video" id="etv2">ETV 2<span></span></a>
-        <a class="to_archive" href="/archive" data-icon="A"><span>Arhiiv</span></a>
+
+        {% for g in items %}
+        {% for i in g %}
+        <a id="{{ i.id }}" href="{{ i.url }}" data-type="{{ i.type }}" data-icon="{{ i.icon }}">{{ i.title }}<span>{{ i.info }}</span></a>
+        {% endfor %}
         <hr />
-        <a class="play" href="http://193.40.133.138:1935/live/vikerraadio/playlist.m3u8" data-type="audio" id="viker">Vikerraadio<span></span></a>
-        <a class="play" href="http://193.40.133.138:1935/live/klassikaraadio/playlist.m3u8" data-type="audio" id="klassika">Klassikaraadio<span></span></a>
-        <a class="play" href="http://193.40.133.138:1935/live/raadio2/playlist.m3u8" data-type="audio" id="r2">Raadio 2<span></span></a>
-        <a class="play" href="http://193.40.133.138:1935/live/r2-2/playlist.m3u8" data-type="audio" id="r2.2">Raadio 2.2<span></span></a>
-        <a class="play" href="http://193.40.133.138:1935/live/raadiotallinn/playlist.m3u8" data-type="audio" id="tallinn">Tallinn<span></span></a>
-        <hr />
-        <a class="play" href="http://striiming.trio.ee:8008/elmar.mp3" data-type="audio" id="elmar">Elmar<span></span></a>
-        <a class="play" href="http://striiming.trio.ee:8008/kuku.mp3" data-type="audio" id="kuku">Kuku<span></span></a>
-        <a class="play" href="http://icecast.linxtelecom.com:8000/mania.mp3.m3u" data-type="audio" id="mania">Mania<span></span></a>
-        <a class="play" href="http://radio.zzz.ee/nommeraadio.m3u" data-type="audio" id="nõmme">Nõmme<span></span></a>
-        <a class="play" href="http://streamer.akaver.com/streamgen.php?stream=skyplus&format=mp3&quality=hi" data-type="audio" id="sky">Sky Plus<span></span></a>
-        <a class="play" href="http://striiming.trio.ee:8008/uuno.mp3" data-type="audio" id="uuno">Uuno<span></span></a>
-        <a class="play" href="http://streamer.akaver.com/streamgen.php?stream=raadio3&format=mp3&quality=hi" data-type="audio" id="r3">Raadio 3<span></span></a>
-        <a class="play" href="http://streamer.akaver.com/streamgen.php?stream=starfm&format=mp3&quality=hi" data-type="audio" id="star">Star FM<span></span></a>
-        <a class="play" href="http://streamer.akaver.com/streamgen.php?stream=powerhit&format=mp3&quality=hi" data-type="audio" id="power">Power Hit<span></span></a>
-        <hr />
-        <a class="play" href="http://www.netiraadio.ee:8000/folgisobrad" data-type="audio" id="folk">Folgisõbrad<span></span></a>
-        <a class="play" href="http://www.netiraadio.ee:8000/jazzivarvid" data-type="audio" id="jazz">Jazzi värvid<span></span></a>
-        <a class="play" href="http://www.netiraadio.ee:8000/klubibiit" data-type="audio" id="klubi">Klubi biit<span></span></a>
-        <a class="play" href="http://www.netiraadio.ee:8000/kuldsedajad" data-type="audio" id="kuldne">Kuldsed ajad<span></span></a>
-        <a class="play" href="http://www.netiraadio.ee:8000/puhastraat" data-type="audio" id="traat">Puhas traat<span></span></a>
-        <a class="play" href="http://www.netiraadio.ee:8000/sinuhetked" data-type="audio" id="sinu">Sinu hetked<span></span></a>
-        <a class="play" href="http://www.netiraadio.ee:8000/teistsugune" data-type="audio" id="teistsugune">Teistsugune<span></span></a>
-        <a class="play" href="http://www.netiraadio.ee:8000/tumedadlood" data-type="audio" id="tume">Tumedad lood<span></span></a>
-        <hr />
-        <a id="safari_link" href="http://www.apple.com/safari" >ARX-Raadio töötab <del>paremini</del> ainult Safari brauseriga.</a>
-        <a id="app_link" data-icon="D" href="http://cl.ly/033Y2K1n1c113c2K0E2v/ARX-Raadio.app.zip" title="Tõmba OS X rakendus"></a>
+        {% endfor %}
+
+        <a id="app_link" class="transparent" data-icon="D" href="http://cl.ly/033Y2K1n1c113c2K0E2v/ARX-Raadio.app.zip" title="Tõmba OS X rakendus" style="display:none;"></a>
+
         <script>
             window.addEventListener('load', function() {
                 setTimeout(scrollTo, 0, 0, 1);
@@ -135,6 +108,7 @@
             };
 
             $(document).ready(function(){
+                {% if token %}
                 channel = new goog.appengine.Channel('{{ token }}');
                 socket = channel.open();
                 socket.onmessage = Info;
@@ -150,6 +124,7 @@
                         };
                     };
                 };
+                {% endif %}
 
                 function Play(type, url, title, badge) {
                     $('#video')[0].pause();
@@ -175,19 +150,18 @@
                     }
                 };
 
-                $('a.play').click(function(){
+                $('a').click(function(){
                     event.preventDefault();
                     link = $(this);
-                    Play(link.data('type'), link.attr('href'), link.justtext(), link.attr('id'));
-                });
-
-                $("a.to_archive").click(function (event) {
-                    event.preventDefault();
-                    window.location = $(this).attr("href");
+                    if(link.data('type')) {
+                        Play(link.data('type'), link.attr('href'), link.justtext(), link.attr('id'));
+                    } else {
+                        window.location = $(this).attr("href");
+                    };
                 });
 
                 if (window.fluid) {
-                    $("a.play").each(function(){
+                    $('a[data-type]').each(function(){
                         function partial(func /*, 0..n args */) {
                             var args = Array.prototype.slice.call(arguments, 1);
                             return function() {
@@ -201,14 +175,14 @@
                     window.fluid.dockBadge = '';
                 }
 
-                if (window.fluid || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
-                    $('#app_link').hide();
-                    $('#safari_link').hide();
+                if (!window.fluid && navigator.userAgent.match(/Mac/i) && !navigator.userAgent.match(/iPad/i) && !navigator.userAgent.match(/iPhone/i) && !navigator.userAgent.match(/iPod/i)) {
+                    $('#app_link').show();
                 };
-                if (window.fluid || !navigator.userAgent.match(/Mac/i)) $('#app_link').hide();
-                if ((navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/Chrome/i))) $('#safari_link').hide();
+                if (!window.fluid && !navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/iPad/i) && !navigator.userAgent.match(/iPhone/i) && !navigator.userAgent.match(/iPod/i)
+                 || navigator.userAgent.match(/Chrome/i)) {
+                    $('#safari_link').show();
+                };
             });
-
         </script>
     </body>
 </html>

@@ -30,13 +30,8 @@ handlers:
   upload: images/rrr.png
   expiration: "90d"
 
-- url: /safari.png
-  static_files: images/safari.png
-  upload: images/safari.png
-  expiration: "90d"
-
 - url: /archive.*
   script: scripts.archive.app
 
 - url: .*
-  script: scripts.radio.app
+  script: scripts.live.app

@@ -14,105 +14,117 @@ from BeautifulSoup import *
 
 
 SHOWS = [{
-        'find': 'ajavaod',
-        'group': 'ajavaod',
-        'name': 'Ajavaod'
+        'find':  u'ajavaod',
+        'group':  'ajavaod',
+        'name':  u'Ajavaod'
     }, {
-        'find': 'aktuaalne kaamera',
-        'group': 'aktuaalnekaamera',
-        'name': 'Aktuaalne kaamera'
+        'find':  u'aktuaalne kaamera',
+        'group':  'aktuaalnekaamera',
+        'name':  u'Aktuaalne kaamera'
     }, {
-        'find':  'arktikast antarktikasse',
-        'group': 'arktikastantarktikasse',
-        'name':  'Arktikast Antarktikasse'
+        'find':  u'arktikast antarktikasse',
+        'group':  'arktikastantarktikasse',
+        'name':  u'Arktikast Antarktikasse'
     }, {
-        'find':  'batareja',
-        'group': 'batareja',
-        'name':  'Batareja'
+        'find':  u'batareja',
+        'group':  'batareja',
+        'name':  u'Batareja'
     }, {
-        'find':  'eesti lood',
-        'group': 'eestilood',
-        'name':  'Eesti lood'
+        'find':  u'eesti lood',
+        'group':  'eestilood',
+        'name':  u'Eesti lood'
     }, {
-        'find':  'jüri üdi klubi',
-        'group': 'jyriydiklubi',
-        'name':  'Jüri Üdi klubi'
+        'find':  u'jüri üdi klubi',
+        'group':  'jyriydiklubi',
+        'name':  u'Jüri Üdi klubi'
     }, {
-        'find':  'kapital',
-        'group': 'kapital',
-        'name':  'Kapital'
+        'find':  u'kapital',
+        'group':  'kapital',
+        'name':  u'Kapital'
     }, {
-        'find':  'nöbinina',
-        'group': 'nobinina',
-        'name':  'Nöbinina'
+        'find':  u'nöbinina',
+        'group':  'nobinina',
+        'name':  u'Nöbinina'
     }, {
-        'find':  'osoon',
-        'group': 'osoon',
-        'name':  'Osoon'
+        'find':  u'osoon',
+        'group':  'osoon',
+        'name':  u'Osoon'
     }, {
-        'find':  'pealtnägija',
-        'group': 'pealtnagija',
-        'name':  'Pealtnägija'
+        'find':  u'pealtnägija',
+        'group':  'pealtnagija',
+        'name':  u'Pealtnägija'
     }, {
-        'find':  'puutepunkt',
-        'group': 'puutepunkt',
-        'name':  'Puutepunkt'
+        'find':  u'puutepunkt',
+        'group':  'puutepunkt',
+        'name':  u'Puutepunkt'
     }, {
-        'find':  'ringvaade',
-        'group': 'ringvaade',
-        'name':  'Ringvaade'
+        'find':  u'ringvaade',
+        'group':  'ringvaade',
+        'name':  u'Ringvaade'
     }, {
-        'find':  'teatrivara',
-        'group': 'teater',
-        'name':  'Teater'
+        'find':  u'teatrivara',
+        'group':  'teater',
+        'name':  u'Teater'
     }, {
-        'find':  'telelavastus',
-        'group': 'teater',
-        'name':  'Teater'
+        'find':  u'telelavastus',
+        'group':  'teater',
+        'name':  u'Teater'
     }, {
-        'find':  'lastelavastus',
-        'group': 'teater',
-        'name':  'Teater'
+        'find':  u'lastelavastus',
+        'group':  'teater',
+        'name':  u'Teater'
     }, {
-        'find':  'terevisioon',
-        'group': 'terevisioon',
-        'name':  'Terevisioon'
+        'find':  u'terevisioon',
+        'group':  'terevisioon',
+        'name':  u'Terevisioon'
     }, {
-        'find':  'välisilm',
-        'group': 'valisilm',
-        'name':  'Välisilm'
+        'find':  u'välisilm',
+        'group':  'valisilm',
+        'name':  u'Välisilm'
     }, {
-        'find':  'õnne 13',
-        'group': 'onne13',
-        'name':  'Õnne 13'
+        'find':  u'õnne 13',
+        'group':  'onne13',
+        'name':  u'Õnne 13'
     }, {
-        'find':  'ajalik ja ajatu',
-        'group': 'ajalikjaajatu',
-        'name':  'Ajalik ja ajatu'
+        'find':  u'ajalik ja ajatu',
+        'group':  'ajalikjaajatu',
+        'name':  u'Ajalik ja ajatu'
     }, {
-        'find':  'lastetuba',
-        'group': 'lastetuba',
-        'name':  'Lastetuba'
+        'find':  u'lastetuba',
+        'group':  'lastetuba',
+        'name':  u'Lastetuba'
     }, {
-        'find':  'meie inimesed',
-        'group': 'meieinimesed',
-        'name':  'Meie inimesed'
+        'find':  u'meie inimesed',
+        'group':  'meieinimesed',
+        'name':  u'Meie inimesed'
     }, {
-        'find':  'püramiidi tipus',
-        'group': 'pyramiiditipus',
-        'name':  'Püramiidi tipus'
+        'find':  u'püramiidi tipus',
+        'group':  'pyramiiditipus',
+        'name':  u'Püramiidi tipus'
     }, {
-        'find':  'vabariigi kodanikud',
-        'group': 'vabariigikodanikud',
-        'name':  'Vabariigi kodanikud'
+        'find':  u'vabariigi kodanikud',
+        'group':  'vabariigikodanikud',
+        'name':  u'Vabariigi kodanikud'
     }, {
-        'find':  'op!',
-        'group': 'op',
-        'name':  'OP!'
+        'find':  u'op!',
+        'group':  'op',
+        'name':  u'OP!'
     }, {
-        'find':  'xxxxxx',
-        'group': 'other',
-        'name':  '...'
+        'find':  u'luuletus',
+        'group':  'luuletus',
+        'name':  u'Luuletus'
+    }, {
+        'find':  u'riigikogu infotund',
+        'group':  'riigikoguinfotund',
+        'name':  u'Riigikogu infotund'
+    }, {
+        'find':  u'rakett69',
+        'group':  'rakett69',
+        'name':  u'Rakett 69'
+    }, {
+        'find':  u'xxxxxx',
+        'group':  'other',
+        'name':  u'. . .'
     }]
 
 
@@ -125,45 +137,49 @@ class Archive(db.Model):
 
 
 class ShowArchive(webapp2.RequestHandler):
-    def get(self, group):
-        group = group.strip('/')
-        if group:
-            recent = False
-            items = []
-            for i in db.Query(Archive).filter('group', group).order('-date').fetch(100):
-                items.append({
-                    'url': 'http://%s/playlist.m3u8' % i.url.replace('rtsp://media.err.ee:80/', 'media.err.ee/').replace('/M/', '/').replace('_definst_/', '/').replace('//', '/'),
-                    'date': i.date.strftime('%d.%m.%Y %H:%M'),
-                    'title': i.title,
-                    'is_video': True,
-                })
-            back = '/archive'
-        else:
-            recent = []
-            for i in db.Query(Archive).order('-date').fetch(5):
-                recent.append({
-                    'url': 'http://%s/playlist.m3u8' % i.url.replace('rtsp://media.err.ee:80/', 'media.err.ee/').replace('/M/', '/').replace('_definst_/', '/').replace('//', '/'),
-                    'date': i.date.strftime('%d.%m.%Y %H:%M'),
-                    'title': i.title,
-                    'is_video': True,
-                })
+    def get(self):
+        recent = []
+        for i in db.Query(Archive).order('-date').fetch(5):
+            recent.append({
+                'url': 'http://%s/playlist.m3u8' % i.url.replace('rtsp://media.err.ee:80/', 'media.err.ee/').replace('/M/', '/').replace('_definst_/', '/').replace('//', '/'),
+                'title': i.title,
+                'info': i.date.strftime('%d.%m.%Y %H:%M'),
+                'type': 'video',
+            })
 
-            items = {}
-            for s in SHOWS:
-                if db.Query(Archive, keys_only=True).filter('group', s['group']).get():
-                    items[s['group']] = {
-                        'url': '/archive/%s' % s['group'],
-                        'title': s['name'].decode('utf-8'),
-                    }
-            items = sorted(items.values(), key=itemgetter('title'))
-            back = '/'
+        groups = {}
+        for s in SHOWS:
+            if db.Query(Archive, keys_only=True).filter('group', s['group']).get():
+                groups[s['group']] = {
+                    'url': '/archive/%s' % s['group'],
+                    'title': s['name'],
+                }
+        groups = sorted(groups.values(), key=itemgetter('title'))
 
         jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '..', 'templates')))
-        template = jinja_environment.get_template('archive.html')
+        template = jinja_environment.get_template('items.html')
         self.response.out.write(template.render({
-            'items': items,
-            'recent': recent,
-            'back': back,
+            'items': [recent, groups],
+            'back': '/',
+        }))
+
+
+class ShowGroup(webapp2.RequestHandler):
+    def get(self, group):
+        items = []
+        for i in db.Query(Archive).filter('group', group).order('-date').fetch(100):
+            items.append({
+                'url': 'http://%s/playlist.m3u8' % i.url.replace('rtsp://media.err.ee:80/', 'media.err.ee/').replace('/M/', '/').replace('_definst_/', '/').replace('//', '/'),
+                'title': i.title,
+                'info': i.date.strftime('%d.%m.%Y %H:%M'),
+                'type': 'video',
+            })
+
+        jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '..', 'templates')))
+        template = jinja_environment.get_template('items.html')
+        self.response.out.write(template.render({
+            'items': [items],
+            'back': '/archive',
         }))
 
 
@@ -177,7 +193,7 @@ class UpdateArchive(webapp2.RequestHandler):
                 date = datetime.strptime(i.find('span').contents[0].replace('\n', '').strip(), '%H:%M | %d.%m.%Y')
                 group = 'other'
                 for s in SHOWS:
-                    if title.lower().find(s['find'].decode('utf-8')) > -1:
+                    if title.lower().find(s['find']) > -1:
                         group = s['group']
                         break
                 row = db.Query(Archive).filter('url', url).get()
@@ -192,6 +208,7 @@ class UpdateArchive(webapp2.RequestHandler):
 
 
 app = webapp2.WSGIApplication([
+        ('/archive', ShowArchive),
         ('/archive/update', UpdateArchive),
-        ('/archive(.*)', ShowArchive),
+        ('/archive/(.*)', ShowGroup),
     ], debug=True)

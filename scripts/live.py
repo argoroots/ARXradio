@@ -19,9 +19,43 @@ class ShowRadio(webapp2.RequestHandler):
             token = channel.create_channel('raadio')
         except:
             token = False
+
+        items = [[
+            {'url': 'http://193.40.133.138:1935/live/etv/playlist.m3u8', 'type': 'video', 'id': u'etv', 'title': u'ETV'},
+            {'url': 'http://193.40.133.138:1935/live/etv2/playlist.m3u8', 'type': 'video', 'id': u'etv2', 'title': u'ETV 2'},
+            {'url': '/archive', 'icon': 'A', 'info': 'Arhiiv'},
+            ], [
+            {'url': 'http://193.40.133.138:1935/live/vikerraadio/playlist.m3u8', 'type': 'audio', 'id': u'viker', 'title': u'Vikerraadio'},
+            {'url': 'http://193.40.133.138:1935/live/klassikaraadio/playlist.m3u8', 'type': 'audio', 'id': u'klassika', 'title': u'Klassikaraadio'},
+            {'url': 'http://193.40.133.138:1935/live/raadio2/playlist.m3u8', 'type': 'audio', 'id': u'r2', 'title': u'Raadio 2'},
+            {'url': 'http://193.40.133.138:1935/live/r2-2/playlist.m3u8', 'type': 'audio', 'id': u'r2.2', 'title': u'Raadio 2.2'},
+            {'url': 'http://193.40.133.138:1935/live/raadiotallinn/playlist.m3u8', 'type': 'audio', 'id': u'tallinn', 'title': u'Tallinn'},
+            ], [
+            {'url': 'http://striiming.trio.ee:8008/elmar.mp3', 'type': 'audio', 'id': u'elmar', 'title': u'Elmar'},
+            {'url': 'http://striiming.trio.ee:8008/kuku.mp3', 'type': 'audio', 'id': u'kuku', 'title': u'Kuku'},
+            {'url': 'http://icecast.linxtelecom.com:8000/mania.mp3.m3u', 'type': 'audio', 'id': u'mania', 'title': u'Mania'},
+            {'url': 'http://radio.zzz.ee/nommeraadio.m3u', 'type': 'audio', 'id': u'nõmme', 'title': u'Nõmme'},
+            {'url': 'http://streamer.akaver.com/streamgen.php?stream=skyplus&format=mp3&quality=hi', 'type': 'audio', 'id': u'sky', 'title': u'Sky Plus'},
+            {'url': 'http://striiming.trio.ee:8008/uuno.mp3', 'type': 'audio', 'id': u'uuno', 'title': u'Uuno'},
+            {'url': 'http://streamer.akaver.com/streamgen.php?stream=raadio3&format=mp3&quality=hi', 'type': 'audio', 'id': u'r3', 'title': u'Raadio 3'},
+            {'url': 'http://streamer.akaver.com/streamgen.php?stream=starfm&format=mp3&quality=hi', 'type': 'audio', 'id': u'star', 'title': u'Star FM'},
+            {'url': 'http://streamer.akaver.com/streamgen.php?stream=powerhit&format=mp3&quality=hi', 'type': 'audio', 'id': u'power', 'title': u'Power Hit'},
+            ], [{'url': 'http://www.netiraadio.ee:8000/folgisobrad', 'type': 'audio', 'id': u'folk', 'title': u'Folgisõbrad'},
+            {'url': 'http://www.netiraadio.ee:8000/jazzivarvid', 'type': 'audio', 'id': u'jazz', 'title': u'Jazzi värvid'},
+            {'url': 'http://www.netiraadio.ee:8000/klubibiit', 'type': 'audio', 'id': u'klubi', 'title': u'Klubi biit'},
+            {'url': 'http://www.netiraadio.ee:8000/kuldsedajad', 'type': 'audio', 'id': u'kuldne', 'title': u'Kuldsed ajad'},
+            {'url': 'http://www.netiraadio.ee:8000/puhastraat', 'type': 'audio', 'id': u'traat', 'title': u'Puhas traat'},
+            {'url': 'http://www.netiraadio.ee:8000/sinuhetked', 'type': 'audio', 'id': u'sinu', 'title': u'Sinu hetked'},
+            {'url': 'http://www.netiraadio.ee:8000/teistsugune', 'type': 'audio', 'id': u'teistsugune', 'title': u'Teistsugune'},
+            {'url': 'http://www.netiraadio.ee:8000/tumedadlood', 'type': 'audio', 'id': u'tume', 'title': u'Tumedad lood'},
+        ]]
+
         jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '..', 'templates')))
-        template = jinja_environment.get_template('radio.html')
-        self.response.out.write(template.render({'token': token}))
+        template = jinja_environment.get_template('items.html')
+        self.response.out.write(template.render({
+            'items': items,
+            'token': token,
+        }))
 
 
 class UpdateRadio(webapp2.RequestHandler):
