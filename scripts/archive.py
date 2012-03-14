@@ -128,6 +128,7 @@ class ShowArchive(webapp2.RequestHandler):
     def get(self, group):
         group = group.strip('/')
         if group:
+            recent = False
             items = []
             for i in db.Query(Archive).filter('group', group).order('-date').fetch(100):
                 items.append({
@@ -138,6 +139,15 @@ class ShowArchive(webapp2.RequestHandler):
                 })
             back = '/archive'
         else:
+            recent = []
+            for i in db.Query(Archive).order('-date').fetch(5):
+                recent.append({
+                    'url': 'http://%s/playlist.m3u8' % i.url.replace('rtsp://media.err.ee:80/', 'media.err.ee/').replace('/M/', '/').replace('_definst_/', '/').replace('//', '/'),
+                    'date': i.date.strftime('%d.%m.%Y %H:%M'),
+                    'title': i.title,
+                    'is_video': True,
+                })
+
             items = {}
             for s in SHOWS:
                 if db.Query(Archive, keys_only=True).filter('group', s['group']).get():
@@ -152,6 +162,7 @@ class ShowArchive(webapp2.RequestHandler):
         template = jinja_environment.get_template('archive.html')
         self.response.out.write(template.render({
             'items': items,
+            'recent': recent,
             'back': back,
         }))
 

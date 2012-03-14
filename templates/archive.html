@@ -77,7 +77,6 @@
                 -webkit-font-smoothing: antialiased;
             }
         </style>
-        <script type="text/javascript" src="/_ah/channel/jsapi"></script>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
         <script type="text/javascript">
             var _gaq = _gaq || [];
@@ -91,10 +90,17 @@
         </script>
     </head>
     <body>
-        <a class="archive_link" href="{{ back }}" data-icon="B"></a>
+        <a class="archive_link" href="{{ back }}" data-icon="<"></a>
         <video id="video" src="/" style="display:none;" controls></video>
         <audio id="audio" src="/" style="display:none;"></audio>
         <hr />
+
+        {% if recent %}
+        {% for i in recent %}
+        <a class="{% if i.is_video %}play{% endif %}" href="{{ i.url }}" data-type="video" id="etv">{{ i.title }}<span>{{ i.date }}</span></a>
+        {% endfor %}
+        <hr />
+        {% endif %}
 
         {% for i in items %}
         <a class="{% if i.is_video %}play{% endif %}" href="{{ i.url }}" data-type="video" id="etv">{{ i.title }}<span>{{ i.date }}</span></a>
