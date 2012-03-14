@@ -114,13 +114,21 @@ SHOWS = [{
         'group':  'luuletus',
         'name':  u'Luuletus'
     }, {
+        'find':  u'100 luulepärli',
+        'group':  'luuletus',
+        'name':  u'Luuletus'
+    }, {
         'find':  u'riigikogu infotund',
         'group':  'riigikoguinfotund',
         'name':  u'Riigikogu infotund'
     }, {
-        'find':  u'rakett69',
+        'find':  u'rakett 69',
         'group':  'rakett69',
         'name':  u'Rakett 69'
+    }, {
+        'find':  u'eesti top 7',
+        'group':  'eestitop7',
+        'name':  u'Eesti TOP 7'
     }, {
         'find':  u'xxxxxx',
         'group':  'other',
@@ -129,11 +137,13 @@ SHOWS = [{
 
 
 class Archive(db.Model):
-    channel = db.StringProperty()
-    group   = db.StringProperty()
-    date    = db.DateTimeProperty()
-    title   = db.StringProperty()
-    url     = db.StringProperty()
+    _added   = db.DateTimeProperty(auto_now_add = True)
+    _changed = db.DateTimeProperty(auto_now = True)
+    channel  = db.StringProperty()
+    group    = db.StringProperty()
+    date     = db.DateTimeProperty()
+    title    = db.StringProperty()
+    url      = db.StringProperty()
 
 
 class ShowArchive(webapp2.RequestHandler):
