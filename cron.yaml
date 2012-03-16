@@ -1,12 +1,8 @@
 cron:
 - description: Send info
-  url: /update
+  url: /update/live
   schedule: every 1 minutes
 
 - description: Get RSS
-  url: /archive/update
+  url: /update/archive
   schedule: every 60 minutes
-
-# - description: Get RSS2
-#   url: /archive/update2
-#   schedule: every 2 minutes

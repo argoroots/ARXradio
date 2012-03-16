@@ -1,5 +1,5 @@
 application: raadioapp
-version: 2012-03-14
+version: 2012-03-16
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -30,18 +30,10 @@ handlers:
   upload: images/rrr.png
   expiration: "90d"
 
-- url: /update
-  script: scripts.live.app
+- url: /update.*
+  script: scripts.update.app
   login: admin
-
-- url: /archive/u.*
-  script: scripts.archive.app
-  login: admin
-
-- url: /archive.*
-  script: scripts.archive.app
-  login: required
 
 - url: .*
-  script: scripts.live.app
+  script: scripts.show.app
   login: required
