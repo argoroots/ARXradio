@@ -30,8 +30,18 @@ handlers:
   upload: images/rrr.png
   expiration: "90d"
 
+- url: /update
+  script: scripts.live.app
+  login: admin
+
+- url: /archive/u.*
+  script: scripts.archive.app
+  login: admin
+
 - url: /archive.*
   script: scripts.archive.app
+  login: required
 
 - url: .*
   script: scripts.live.app
+  login: required

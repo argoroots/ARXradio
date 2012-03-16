@@ -6,3 +6,7 @@ cron:
 - description: Get RSS
   url: /archive/update
   schedule: every 60 minutes
+
+# - description: Get RSS2
+#   url: /archive/update2
+#   schedule: every 2 minutes

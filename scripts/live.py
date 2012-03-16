@@ -13,17 +13,24 @@ from BeautifulSoup import BeautifulStoneSoup
 from BeautifulSoup import *
 
 
-class ShowRadio(webapp2.RequestHandler):
+from users import *
+
+
+class ShowLive(webapp2.RequestHandler):
     def get(self):
+        if not Authorize(self):
+            return
+
         try:
             token = channel.create_channel('raadio')
         except:
             token = False
 
         items = [[
+            {'url': '/archive', 'icon': 'A', 'info': 'Arhiiv'}
+            ], [
             {'url': 'http://193.40.133.138:1935/live/etv/playlist.m3u8', 'type': 'video', 'id': u'etv', 'title': u'ETV'},
-            {'url': 'http://193.40.133.138:1935/live/etv2/playlist.m3u8', 'type': 'video', 'id': u'etv2', 'title': u'ETV 2'},
-            {'url': '/archive', 'icon': 'A', 'info': 'Arhiiv'},
+            {'url': 'http://193.40.133.138:1935/live/etv2/playlist.m3u8', 'type': 'video', 'id': u'etv2', 'title': u'ETV 2'}
             ], [
             {'url': 'http://193.40.133.138:1935/live/vikerraadio/playlist.m3u8', 'type': 'audio', 'id': u'viker', 'title': u'Vikerraadio'},
             {'url': 'http://193.40.133.138:1935/live/klassikaraadio/playlist.m3u8', 'type': 'audio', 'id': u'klassika', 'title': u'Klassikaraadio'},
@@ -58,7 +65,7 @@ class ShowRadio(webapp2.RequestHandler):
         }))
 
 
-class UpdateRadio(webapp2.RequestHandler):
+class UpdateLive(webapp2.RequestHandler):
     def get(self):
         json_dict = {}
 
@@ -101,7 +108,7 @@ def get_info(url, before, after):
 
 
 app = webapp2.WSGIApplication([
-        ('/', ShowRadio),
-        ('/update', UpdateRadio),
+        ('/', ShowLive),
+        ('/update', UpdateLive),
         ('/_ah/channel/(.*)', ChannelConnection),
     ], debug=True)
