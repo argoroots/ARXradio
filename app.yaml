@@ -34,6 +34,9 @@ handlers:
   script: scripts.update.app
   login: admin
 
+- url: /
+  script: scripts.show.app
+
 - url: .*
   script: scripts.show.app
   login: required

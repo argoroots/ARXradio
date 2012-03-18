@@ -60,7 +60,7 @@ class UpdateGroup(webapp2.RequestHandler):
 
     def post(self):
         self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
-        for i in db.Query(Archive).filter('group', 'other').fetch(1000):
+        for i in db.Query(Archive).filter('group', 'other').fetch(1500):
             group = 'other'
             for s in db.Query(Show).order('find_order').fetch(1000):
                 if i.title.startswith(tuple(s.find.split(' @ '))) or i.title in s.find.split(' @ '):
@@ -72,13 +72,14 @@ class UpdateGroup(webapp2.RequestHandler):
 
 class UpdateArchive(webapp2.RequestHandler):
     def get(self):
-        taskqueue.Task(url='/update/err', params={'url': 'http://m.err.ee/arhiiv/etv'}).add()
-        taskqueue.Task(url='/update/err', params={'url': 'http://m.err.ee/arhiiv/etv2'}).add()
+        taskqueue.Task(url='/update/err', params={'url': 'http://m.err.ee/arhiiv/etv', 'channel': 'ETV'}).add()
+        taskqueue.Task(url='/update/err', params={'url': 'http://m.err.ee/arhiiv/etv2', 'channel': 'ETV2'}).add()
         taskqueue.Task(url='/update/kanal2', params={'url': 'http://kanal2.ee/vaatasaateid'}).add()
 
 
 class UpdateERR(webapp2.RequestHandler):
     def post(self):
+        channel = self.request.get('channel')
         channel_url = self.request.get('url')
         soup = BeautifulSoup(urlfetch.fetch(channel_url, deadline=60).content)
         for i in soup.findAll('a', attrs={'class': 'releated jqclip'}):
@@ -100,6 +101,7 @@ class UpdateERR(webapp2.RequestHandler):
             row.title = title
             row.url = url
             row.put()
+            logging.debug('%s %s -> %s' % (date.strftime('%d.%m.%Y %H:%M'), title, group))
 
 
 class UpdateETV(webapp2.RequestHandler):
@@ -109,44 +111,47 @@ class UpdateETV(webapp2.RequestHandler):
         soup = BeautifulSoup(urlfetch.fetch(channel_url, deadline=60).content)
         soup = soup.find('div', attrs={'class': 'right_col_sees'})
         soup = soup.find('div', attrs={'class': 'fake_href_list'})
-        for i in soup.findAll('a'):
-            xml_url = 'http://etv.err.ee/%s' % i['href']
-            html = urlfetch.fetch(xml_url, deadline=60).content
-            show = BeautifulSoup(html)
-            show = show.find('div', attrs={'class': 'right_col_sees'})
+        if soup:
+            for i in soup.findAll('a'):
+                xml_url = 'http://etv.err.ee/%s' % i['href']
+                html = urlfetch.fetch(xml_url, deadline=60).content
+                show = BeautifulSoup(html)
+                show = show.find('div', attrs={'class': 'right_col_sees'})
 
-            date = show.find('span', attrs={'class': 'tugev valge'})
-            date = date.contents[1].replace('\n', '').strip()
-            date = datetime.strptime(date[:16].strip(), '%d.%m.%Y %H:%M')
+                date = show.find('span', attrs={'class': 'tugev valge'})
+                date = date.contents[1].replace('\n', '').strip()
+                date = datetime.strptime(date[:16].strip(), '%d.%m.%Y %H:%M')
 
-            title = show.find('span', attrs={'class': 'tugev valge'})
-            title = title.contents[1].replace('\n', '').strip()
-            title = title[18:].strip()
+                title = show.find('span', attrs={'class': 'tugev valge'})
+                title = title.contents[1].replace('\n', '').strip()
+                title = title[18:].strip()
 
-            description = show.find('div', attrs={'style': 'margin:10px; padding:10px; background:#EEF2D4; border: 1px solid gray; clear:both'})
-            description = description.getText()
-            description = description.replace(date.strftime('(%d.%m.%Y %H:%M)'), '').replace(title, '').strip()
+                description = show.find('div', attrs={'style': 'margin:10px; padding:10px; background:#EEF2D4; border: 1px solid gray; clear:both'})
+                description = description.getText()
+                description = description.replace(date.strftime('(%d.%m.%Y %H:%M)'), '').replace(title, '').strip()
 
-            url = html.split('loadFlow(\'flow_player\', \'')[1].split('\');')[0].replace('\',\'','/').replace('rtmp://', '').replace('rtsp://', '').strip()
-            url = 'http://%s/playlist.m3u8' % url
+                url = html.split('loadFlow(\'flow_player\', \'')[1].split('\');')[0].replace('\',\'','/').replace('rtmp://', '').replace('rtsp://', '').strip()
+                url = 'http://%s/playlist.m3u8' % url
 
-            group = 'other'
-            for s in db.Query(Show).order('find_order').fetch(1000):
-                if title.startswith(tuple(s.find.split(' @ '))) or title in s.find.split(' @ '):
-                    group = s.path
-                    break
-            row = db.Query(Archive).filter('url', url).get()
-            if not row:
-                row = Archive()
-                row.channel = 'ETV'
-                row.group = group
-                row.title = title
-                row.date = date
-                row.url = url
-            row.description = description
-            row.info_from = xml_url
-            row.put()
-            logging.debug('%s %s -> %s' % (date.strftime('%d.%m.%Y %H:%M'), title, group))
+                group = 'other'
+                for s in db.Query(Show).order('find_order').fetch(1000):
+                    if title.startswith(tuple(s.find.split(' @ '))) or title in s.find.split(' @ '):
+                        group = s.path
+                        break
+                row = db.Query(Archive).filter('url', url).get()
+                if not row:
+                    row = Archive()
+                    row.channel = 'ETV'
+                    row.group = group
+                    row.title = title
+                    row.date = date
+                    row.url = url
+                row.description = description
+                row.info_from = xml_url
+                row.put()
+                logging.debug('%s %s -> %s' % (date.strftime('%d.%m.%Y %H:%M'), title, group))
+        else:
+            logging.debug('Nothing to import!')
 
         previous = datetime.strptime(d, '%Y-%m-%d')-timedelta(1)
         taskqueue.Task(url='/update/etv/%s' % previous.strftime('%Y-%m-%d'), method='GET').add(queue_name='etv')
@@ -209,6 +214,7 @@ class UpdateKanal2(webapp2.RequestHandler):
             row.description = description
             row.info_from = xml_url
             row.put()
+            logging.debug('%s %s -> %s' % (date.strftime('%d.%m.%Y %H:%M'), title, group))
 
 
 app = webapp2.WSGIApplication([

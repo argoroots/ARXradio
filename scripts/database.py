@@ -7,22 +7,29 @@ class User(db.Model):
     _changed    = db.DateTimeProperty(auto_now = True)
     email       = db.StringProperty()
     is_allowed  = db.BooleanProperty(default=False)
+    favourites  = db.ListProperty(db.Key)
 
 
-def Authorize(r):
+def Authorize():
     user = users.get_current_user()
+    if not user:
+        return False
     u = db.Query(User).filter('email', user.email()).get()
     if not u:
         u = User()
         u.email = user.email()
         u.put()
     if u.is_allowed == False:
-        r.redirect(users.create_logout_url('/'))
         return False
     return True
 
+def CurrentUser():
+    user = users.get_current_user()
+    if user:
+        return db.Query(User).filter('email', user.email()).get()
 
-class Show(db.Expando):
+
+class Show(db.Model):
     title       = db.StringProperty()
     path        = db.StringProperty()
     find        = db.StringProperty()

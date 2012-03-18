@@ -17,53 +17,30 @@
                 border: none;
             }
             body {
-                max-width: 500px;
-                margin: 0px auto;
                 font-family: Georgia, Times, serif;
-                font-size: 18px;
-                text-align: left;
-                background: #EAEAEA;
+                background: #EEEEEE;
             }
             a {
-                display: block;
-                width: 100%;
-                margin-bottom: 1px;
-                padding: 10px 0px;
+                float: left;
+                width: 25%;
+                min-width: 160px;
+                margin: 0px;
+                padding: 40px 0px;
                 text-align: center;
                 text-decoration: none;
                 color: #525252;
-                background: #FFFFFF;
             }
             a span {
                 display: block;
-                font-size: 13px;
+                font-size: 20px;
                 color: #A4A4A4;
-            }
-            a.selected {
-                font-weight: bold;
-                color: #4096EE;
-                background-color: #FDFDFD;
-            }
-            a.transparent {
-                background: #E8E8E8;
-            }
-            hr {
-                height: 0px;
-                padding: 3px;
-            }
-            audio {
-                height: 0px;
-                width: 0px;
-            }
-            video {
-                display: block;
-                width: 100%;
-                padding: 0px;
             }
             [data-icon]:before {
                 font-family: 'Pictos Custom';
-                font-size: 26px;
+                font-size: 100px;
                 content: attr(data-icon);
+                color: gray;
+                text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
                 -webkit-font-smoothing: antialiased;
             }
             header {
@@ -79,7 +56,16 @@
             }
             header a {
                 padding: 0px;
-                width:50px;
+                width: 50px;
+                min-width: 50px;
+            }
+            header [data-icon]:before {
+                font-family: 'Pictos Custom';
+                font-size: 26px;
+                content: attr(data-icon);
+                color: #525252;
+                text-shadow: none;
+                -webkit-font-smoothing: antialiased;
             }
         </style>
         {% if token %}<script type="text/javascript" src="/_ah/channel/jsapi"></script>{% endif %}
@@ -97,20 +83,15 @@
     </head>
     <body>
         <header>
-            {% if favourite %}
-            <a id="favourite_true" class="transparent favourite" href="javascript:void(0);" data-icon="S" style="float:right;{% if favourite == '-' %} display:none;{% endif %}"></a>
-            <a id="favourite_false" class="transparent favourite" href="javascript:void(0);" data-icon="s" style="float:right;{% if favourite == '+' %} display:none;{% endif %}"></a>
-            {% else %}
-            <a class="transparent" href="javascript:void(0);" style="float:right;"></a>
+            {% if logout %}
+            <a href="{{ logout }}" data-icon="O" style="float:right;"></a>
             {% endif %}
-            <a class="transparent" href="javascript:history.go(-1);" data-icon="<" style="float:left;"></a>
-            {{ caption }}
+            <a id="app_link" title="Tõmba OS X rakendus" data-icon="D" href="http://cl.ly/033Y2K1n1c113c2K0E2v/ARX-Raadio.app.zip" style="float:left; display:none;"></a>
+            <a id="app_link2" href="" style="float:left;"></a>
+            ARX-Raadio
         </header>
 
-        <hr style="padding-top:49px;" />
-        <video id="video" src="/" style="display:none;" controls></video>
-        <audio id="audio" src="/" style="display:none;"></audio>
-        <hr />
+        <hr style="padding-top:55px;" />
 
         {% for g in items %}
         {% for i in g %}
@@ -124,18 +105,7 @@
                 return $(this).clone().children().remove().end().text();
             };
 
-            var header = $('header');
             $(document).ready(function(){
-                $(window).scroll(function(e){
-                    if(header.offset().top !== 0){
-                        if(!header.hasClass('shadow')){
-                            header.addClass('shadow');
-                        }
-                    }else{
-                        header.removeClass('shadow');
-                    }
-                });
-
                 {% if token %}
                 channel = new goog.appengine.Channel('{{ token }}');
                 socket = channel.open();
@@ -214,6 +184,11 @@
                     });
                     window.fluid.dockBadge = '';
                 }
+
+                if (!window.fluid && navigator.userAgent.match(/Mac/i) && !navigator.userAgent.match(/iPad/i) && !navigator.userAgent.match(/iPhone/i) && !navigator.userAgent.match(/iPod/i)) {
+                    $('#app_link').show();
+                    $('#app_link2').hide();
+                };
             });
         </script>
     </body>

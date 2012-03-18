@@ -8,18 +8,36 @@ from operator import itemgetter
 
 from google.appengine.ext import db
 from google.appengine.api import channel
+from google.appengine.api import users
 
 from database import *
 
 
-class ShowLive(webapp2.RequestHandler):
+class ShowFrontpage(webapp2.RequestHandler):
     def get(self):
-        if not Authorize(self):
-            return
+        if not Authorize():
+            pass
 
         items = [[
-            {'url': '/archive', 'icon': 'A', 'info': 'Arhiiv'}
-            ], [
+            {'url': '/l', 'icon': 'L', 'info': 'Otse-eeter'},
+            {'url': '/n', 'icon': 'N', 'info': 'Uued'},
+            {'url': '/f', 'icon': 'S', 'info': 'Lemmikud'},
+            {'url': '/a', 'icon': 'A', 'info': 'Arhiiv'},
+        ]]
+
+        jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '..', 'templates')))
+        template = jinja_environment.get_template('frontpage.html')
+        self.response.out.write(template.render({
+            'items': items,
+            'logout': users.create_logout_url('/') if users.get_current_user() else False,
+        }))
+
+class ShowLive(webapp2.RequestHandler):
+    def get(self):
+        if not Authorize():
+            self.redirect('/')
+
+        items = [[
             {'url': 'http://193.40.133.138:1935/live/etv/playlist.m3u8', 'type': 'video', 'id': u'etv', 'title': u'ETV'},
             {'url': 'http://193.40.133.138:1935/live/etv2/playlist.m3u8', 'type': 'video', 'id': u'etv2', 'title': u'ETV 2'}
             ], [
@@ -48,7 +66,6 @@ class ShowLive(webapp2.RequestHandler):
             {'url': 'http://www.netiraadio.ee:8000/tumedadlood', 'type': 'audio', 'id': u'tume', 'title': u'Tumedad lood'},
         ]]
 
-
         token = channel.create_channel('raadio')
 
         jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '..', 'templates')))
@@ -56,49 +73,97 @@ class ShowLive(webapp2.RequestHandler):
         self.response.out.write(template.render({
             'items': items,
             'token': token,
+            'caption': 'Otse-eeter',
         }))
+
+
+class ChannelConnection(webapp2.RequestHandler):
+    def get(self, method):
+        logging.debug('%s' % method)
 
 
 class ShowArchive(webapp2.RequestHandler):
     def get(self):
-        if not Authorize(self):
-            return
+        if not Authorize():
+            self.redirect('/')
 
-        live = [{'url': '/', 'icon': 'L', 'info': 'Live'}]
+        items = []
+        groups = {}
+        for s in db.Query(Show).fetch(1000):
+            if s.path != 'other':
+                groups[s.path] = {
+                    'url': '/%s' % s.path,
+                    'title': s.title,
+                    'info': db.Query(Archive, keys_only=True).filter('group', s.path).count()
+                }
+        items.append(sorted(groups.values(), key=itemgetter('title')))
+        items.append([{'url': '/other', 'title': '. . .'}])
 
-        recent = []
-        for i in db.Query(Archive).order('-date').fetch(5):
-            recent.append({
+        jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '..', 'templates')))
+        template = jinja_environment.get_template('show.html')
+        self.response.out.write(template.render({
+            'items': items,
+            'caption': 'Arhiiv',
+        }))
+
+
+class ShowFavourites(webapp2.RequestHandler):
+    def get(self):
+        if not Authorize():
+            self.redirect('/')
+
+        items = {}
+        for s in Show().get(CurrentUser().favourites):
+            items[s.path] = {
+                'url': '/%s' % s.path,
+                'title': s.title,
+                'info': db.Query(Archive, keys_only=True).filter('group', s.path).count(limit=100000)
+            }
+
+        jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '..', 'templates')))
+        template = jinja_environment.get_template('show.html')
+        self.response.out.write(template.render({
+            'items': [sorted(items.values(), key=itemgetter('title'))],
+            'caption': 'Lemmikud',
+        }))
+
+
+class ShowNew(webapp2.RequestHandler):
+    def get(self):
+        if not Authorize():
+            self.redirect('/')
+
+        items = []
+        for i in db.Query(Archive).order('-date').fetch(25):
+            items.append({
                 'url': i.url,
                 'title': i.title,
                 'info': i.date.strftime('%d.%m.%Y %H:%M'),
                 'type': 'video',
             })
 
-        groups = {}
-        for s in db.Query(Show).order('title').fetch(1000):
-            groups[s.path] = {
-                'url': '/archive/%s' % s.path,
-                'title': s.title,
-                'info': db.Query(Archive, keys_only=True).filter('group', s.path).count()
-            }
-        groups = sorted(groups.values(), key=itemgetter('title'))
-
-
         jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '..', 'templates')))
         template = jinja_environment.get_template('show.html')
         self.response.out.write(template.render({
-            'items': [live, recent, groups],
+            'items': [items],
+            'caption': 'Uued',
         }))
 
 
 class ShowGroup(webapp2.RequestHandler):
     def get(self, group):
-        if not Authorize(self):
-            return
+        if not Authorize():
+            self.redirect('/')
+
+        show = db.Query(Show).filter('path', group).get()
+        caption = '404'
+        favourite = False
+        if show:
+            caption = show.title
+            favourite = '+' if show.key() in CurrentUser().favourites else '-'
 
         items = []
-        for i in db.Query(Archive).filter('group', group).order('-date').fetch(1000):
+        for i in db.Query(Archive).filter('group', group).order('-date').fetch(1500):
             items.append({
                 'url': i.url,
                 'title': i.title,
@@ -112,12 +177,31 @@ class ShowGroup(webapp2.RequestHandler):
         template = jinja_environment.get_template('show.html')
         self.response.out.write(template.render({
             'items': [items],
-            'back': '/archive',
+            'caption': caption,
+            'favourite': favourite,
         }))
+
+    def post(self, group):
+        if not Authorize():
+            return
+
+        show_key = db.Query(Show, keys_only=True).filter('path', group).get()
+        user = CurrentUser()
+        if show_key in CurrentUser().favourites:
+            user.favourites.remove(show_key)
+            self.response.out.write('-')
+        else:
+            user.favourites.append(show_key)
+            self.response.out.write('+')
+        user.put()
 
 
 app = webapp2.WSGIApplication([
-        ('/', ShowLive),
-        ('/archive', ShowArchive),
-        ('/archive/(.*)', ShowGroup),
+        ('/', ShowFrontpage),
+        ('/l', ShowLive),
+        ('/a', ShowArchive),
+        ('/f', ShowFavourites),
+        ('/n', ShowNew),
+        ('/_ah/channel/(.*)', ChannelConnection),
+        ('/(.*)', ShowGroup),
     ], debug=True)
