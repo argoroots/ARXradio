@@ -103,7 +103,7 @@
             {% else %}
             <a class="transparent" href="javascript:void(0);" style="float:right;"></a>
             {% endif %}
-            <a class="transparent" href="javascript:history.go(-1);" data-icon="<" style="float:left;"></a>
+            <a class="transparent" href="{{ back }}" data-icon="<" style="float:left;"></a>
             {{ caption }}
         </header>
 
@@ -114,7 +114,7 @@
 
         {% for g in items %}
         {% for i in g %}
-        <a id="{{ i.id }}" href="{{ i.url }}" data-type="{{ i.type }}" data-icon="{{ i.icon }}">{{ i.title }}<span>{{ i.info }}</span></a>
+        <a id="{{ i.id|default('', False) }}" href="{{ i.url|default('', False) }}" data-type="{{ i.type|default('', False) }}" data-icon="{{ i.icon|default('', False) }}" title="{{ i.description|default('', False) }}" >{{ i.title }}<span>{{ i.info }}</span></a>
         {% endfor %}
         <hr />
         {% endfor %}

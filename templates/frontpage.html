@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <title>ARX-Raadio</title>
         <meta name="author" content="Argo Roots" />
-        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width" />
         <link rel="icon" href="rrr.png" sizes="64x64" type="image/png" />
         <link rel="apple-touch-icon" href="rrr.png" sizes="64x64" type="image/png" />
@@ -18,7 +18,7 @@
             }
             body {
                 font-family: Georgia, Times, serif;
-                background: #EEEEEE;
+                background: #FFFFFF;
             }
             a {
                 float: left;
@@ -39,8 +39,7 @@
                 font-family: 'Pictos Custom';
                 font-size: 100px;
                 content: attr(data-icon);
-                color: gray;
-                text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+                text-shadow: 0px 2px 7px rgba(0, 0, 0, 0.3);
                 -webkit-font-smoothing: antialiased;
             }
             header {
@@ -93,12 +92,10 @@
 
         <hr style="padding-top:55px;" />
 
-        {% for g in items %}
-        {% for i in g %}
-        <a id="{{ i.id }}" href="{{ i.url }}" data-type="{{ i.type }}" data-icon="{{ i.icon }}">{{ i.title }}<span>{{ i.info }}</span></a>
-        {% endfor %}
-        <hr />
-        {% endfor %}
+        <a href="/l" data-icon="L" style="color:#FF0000;"><span>Otse-eeter</span></a>
+        <a href="/n" data-icon="N" style="color:#33CC33;"><span>Uued</span></a>
+        <a href="/f" data-icon="S" style="color:#FFFF00;"><span>Lemmikud</span></a>
+        <a href="/a" data-icon="A" style="color:#3399FF;"><span>Arhiiv</span></a>
 
         <script>
             jQuery.fn.justtext = function() {

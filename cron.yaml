@@ -3,6 +3,6 @@ cron:
   url: /update/live
   schedule: every 1 minutes
 
-- description: Get RSS
+- description: Get archive
   url: /update/archive
-  schedule: every 60 minutes
+  schedule: every 3 hours

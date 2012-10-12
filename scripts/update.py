@@ -39,8 +39,8 @@ class UpdateLive(webapp2.RequestHandler):
         json_dict['mania']   = get_info('http://www.mania.ee/eeter.php?rnd='+str(random.randint(1, 1000000)), '<font color=\'ffffff\'>', '</font>')
         json_dict['sky']     = get_info('http://www.skyplus.fm/ram/nowplaying_main.html?rnd='+str(random.randint(1, 1000000)), '<span class="hetkeleetris">', '</span>')
         json_dict['r3']      = get_info('http://www.raadio3.ee/ram/nowplaying_main.html?rnd='+str(random.randint(1, 1000000)), '<span class="eetris2">', '</body>')
-        json_dict['star']    = get_info('http://rds.starfm.ee/jsonRdsInfo.php?Name=Star&rnd='+str(random.randint(1, 1000000)), '({"currentArtist":"', '","nextArtist"').replace('","currentSong":"', ' - ')
-        json_dict['power']   = get_info('http://rds.power.ee/jsonRdsInfo.php?Name=Power&rnd='+str(random.randint(1, 1000000)), '({"currentArtist":"', '","nextArtist"').replace('","currentSong":"', ' - ')
+        json_dict['star']    = get_info('http://rds.starfm.ee/jsonRdsInfo.php?Name=Star&rnd='+str(random.randint(1, 1000000)), '({"currentArtist":"', '","currentStartTime"').replace('","currentSong":"', ' - ')
+        json_dict['power']   = get_info('http://rds.power.ee/jsonRdsInfo.php?Name=Power&rnd='+str(random.randint(1, 1000000)), '({"currentArtist":"', '","currentStartTime"').replace('","currentSong":"', ' - ')
 
         json_str = json.dumps(json_dict)
         channel.send_message('raadio', json_str)
@@ -56,10 +56,10 @@ def get_info(url, before, after):
 
 class UpdateGroup(webapp2.RequestHandler):
     def get(self):
+        self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
         taskqueue.Task(url='/update/group').add()
 
     def post(self):
-        self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
         for i in db.Query(Archive).filter('group', 'other').fetch(1500):
             group = 'other'
             for s in db.Query(Show).order('find_order').fetch(1000):
@@ -72,6 +72,8 @@ class UpdateGroup(webapp2.RequestHandler):
 
 class UpdateArchive(webapp2.RequestHandler):
     def get(self):
+        day = datetime.today()-timedelta(2)
+        taskqueue.Task(url='/update/etv', params={'url': 'http://etv.err.ee/arhiiv.php?sort=paev&paev=%s' % day.strftime('%Y-%m-%d')}).add()
         taskqueue.Task(url='/update/err', params={'url': 'http://m.err.ee/arhiiv/etv', 'channel': 'ETV'}).add()
         taskqueue.Task(url='/update/err', params={'url': 'http://m.err.ee/arhiiv/etv2', 'channel': 'ETV2'}).add()
         taskqueue.Task(url='/update/kanal2', params={'url': 'http://kanal2.ee/vaatasaateid'}).add()
@@ -82,37 +84,43 @@ class UpdateERR(webapp2.RequestHandler):
         channel = self.request.get('channel')
         channel_url = self.request.get('url')
         soup = BeautifulSoup(urlfetch.fetch(channel_url, deadline=60).content)
-        for i in soup.findAll('a', attrs={'class': 'releated jqclip'}):
-            url = i['href'].replace('\n', '').strip()
-            url = 'http://%s/playlist.m3u8' % url.replace('rtmp://', '').replace('rtsp://', '').replace(':80/', '/').replace('/M/', '/').replace('_definst_/', '/').replace('//', '/')
-            title = i.contents[0].replace('\n', '').strip()
-            date = datetime.strptime(i.find('span').contents[0].replace('\n', '').strip(), '%H:%M | %d.%m.%Y')
-            group = 'other'
-            for s in db.Query(Show).order('find_order').fetch(1000):
-                if title.startswith(tuple(s.find.split(' @ '))) or title in s.find.split(' @ '):
-                    group = s.path
-                    break
-            row = db.Query(Archive).filter('url', url).get()
-            if not row:
-                row = Archive()
-            row.channel = channel
-            row.group = group
-            row.date = date
-            row.title = title
-            row.url = url
-            row.put()
-            logging.debug('%s %s -> %s' % (date.strftime('%d.%m.%Y %H:%M'), title, group))
+        if soup:
+            links = soup.findAll('a', attrs={'class': 'releated jqclip'})
+            logging.debug('%s - %s' % (channel_url, len(links)))
+            for i in links:
+                url = i['href'].replace('\n', '').strip()
+                url = 'http://%s/playlist.m3u8' % url.replace('rtmp://', '').replace('rtsp://', '').replace(':80/', '/').replace('/M/', '/').replace('_definst_/', '/').replace('//', '/')
+                title = i.contents[0].replace('\n', '').strip()
+                date = datetime.strptime(i.find('span').contents[0].replace('\n', '').strip(), '%H:%M | %d.%m.%Y')
+                group = 'other'
+                for s in db.Query(Show).order('find_order').fetch(1000):
+                    if title.startswith(tuple(s.find.split(' @ '))) or title in s.find.split(' @ '):
+                        group = s.path
+                        break
+                row = db.Query(Archive).filter('url', url).get()
+                if not row:
+                    row = Archive()
+                row.channel = channel
+                row.group = group
+                row.date = date
+                row.title = title
+                row.url = url
+                row.put()
+                logging.debug('%s %s -> %s' % (date.strftime('%d.%m.%Y %H:%M'), title, group))
+        else:
+            logging.debug('Nothing to import!')
 
 
 class UpdateETV(webapp2.RequestHandler):
-    def get(self, d):
-        self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
-        channel_url = 'http://etv.err.ee/arhiiv.php?sort=paev&paev=%s' % d
+    def post(self):
+        channel_url = self.request.get('url')
         soup = BeautifulSoup(urlfetch.fetch(channel_url, deadline=60).content)
         soup = soup.find('div', attrs={'class': 'right_col_sees'})
         soup = soup.find('div', attrs={'class': 'fake_href_list'})
         if soup:
-            for i in soup.findAll('a'):
+            links = soup.findAll('a')
+            logging.debug('%s - %s' % (channel_url, len(links)))
+            for i in links:
                 xml_url = 'http://etv.err.ee/%s' % i['href']
                 html = urlfetch.fetch(xml_url, deadline=60).content
                 show = BeautifulSoup(html)
@@ -153,9 +161,6 @@ class UpdateETV(webapp2.RequestHandler):
         else:
             logging.debug('Nothing to import!')
 
-        previous = datetime.strptime(d, '%Y-%m-%d')-timedelta(1)
-        taskqueue.Task(url='/update/etv/%s' % previous.strftime('%Y-%m-%d'), method='GET').add(queue_name='etv')
-
 
 class UpdateKanal2(webapp2.RequestHandler):
     def post(self):
@@ -170,8 +175,7 @@ class UpdateKanal2(webapp2.RequestHandler):
                     ids.append(id)
                 except:
                     pass
-        logging.debug('%s - %s' % (len(list(set(ids))), channel_url))
-
+        logging.debug('%s - %s' % (channel_url, len(list(set(ids)))))
         for id in list(set(ids)):
             xml_url = 'http://kanal2.ee/video/playerPlaylistApi?id=%s' % id
             xml = BeautifulSoup(urlfetch.fetch(xml_url, deadline=60).content)
@@ -186,6 +190,9 @@ class UpdateKanal2(webapp2.RequestHandler):
 
             title = xml.find('name')
             title = ' '.join(title.contents).replace('\n', ' ').strip()
+
+            if title.find(date.strftime('(%d.%m.%Y %H:%M)')) > -1 and title != date.strftime('(%d.%m.%Y %H:%M)'):
+                title = title.replace(date.strftime('(%d.%m.%Y %H:%M)'), '').strip()
 
             episode = xml.find('episode')
             episode = ' '.join(episode.contents).replace('\n', ' ').strip()
@@ -217,11 +224,39 @@ class UpdateKanal2(webapp2.RequestHandler):
             logging.debug('%s %s -> %s' % (date.strftime('%d.%m.%Y %H:%M'), title, group))
 
 
+class UpdateX(webapp2.RequestHandler):
+    def get(self):
+        self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+        self.response.out.write(str(db.Query(Archive).count(limit=1000000)))
+        taskqueue.Task(url='/update/x').add()
+
+    def post(self):
+        for u in db.Query(User).fetch(100):
+            for i in u.favourites:
+                s = Show().get(i)
+                if not s:
+                    u.favourites.remove(i)
+                    u.put()
+
+
+class UpdateXX(webapp2.RequestHandler):
+    def get(self):
+        channel = 'Kanal2'
+        self.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+        self.response.out.write(str(db.Query(Archive).count(limit=1000000)) + '\n')
+        for i in db.Query(Archive).fetch(10000):
+            if i.episode:
+                if i.title.find(i.episode) == -1:
+                    self.response.out.write(i.title + ' # ' + i.episode + '\n')
+
+
 app = webapp2.WSGIApplication([
         ('/update/live', UpdateLive),
         ('/update/group', UpdateGroup),
         ('/update/archive', UpdateArchive),
-        ('/update/etv/(.*)', UpdateETV),
+        ('/update/etv', UpdateETV),
         ('/update/err', UpdateERR),
         ('/update/kanal2', UpdateKanal2),
+        ('/update/x', UpdateX),
+        ('/update/x2', UpdateXX),
     ], debug=True)

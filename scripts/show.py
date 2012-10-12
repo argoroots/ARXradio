@@ -18,17 +18,9 @@ class ShowFrontpage(webapp2.RequestHandler):
         if not Authorize():
             pass
 
-        items = [[
-            {'url': '/l', 'icon': 'L', 'info': 'Otse-eeter'},
-            {'url': '/n', 'icon': 'N', 'info': 'Uued'},
-            {'url': '/f', 'icon': 'S', 'info': 'Lemmikud'},
-            {'url': '/a', 'icon': 'A', 'info': 'Arhiiv'},
-        ]]
-
         jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '..', 'templates')))
         template = jinja_environment.get_template('frontpage.html')
         self.response.out.write(template.render({
-            'items': items,
             'logout': users.create_logout_url('/') if users.get_current_user() else False,
         }))
 
@@ -74,6 +66,7 @@ class ShowLive(webapp2.RequestHandler):
             'items': items,
             'token': token,
             'caption': 'Otse-eeter',
+            'back': '/',
         }))
 
 
@@ -104,6 +97,7 @@ class ShowArchive(webapp2.RequestHandler):
         self.response.out.write(template.render({
             'items': items,
             'caption': 'Arhiiv',
+            'back': '/',
         }))
 
 
@@ -125,6 +119,7 @@ class ShowFavourites(webapp2.RequestHandler):
         self.response.out.write(template.render({
             'items': [sorted(items.values(), key=itemgetter('title'))],
             'caption': 'Lemmikud',
+            'back': '/',
         }))
 
 
@@ -134,7 +129,7 @@ class ShowNew(webapp2.RequestHandler):
             self.redirect('/')
 
         items = []
-        for i in db.Query(Archive).order('-date').fetch(25):
+        for i in db.Query(Archive).order('-date').fetch(50):
             items.append({
                 'url': i.url,
                 'title': i.title,
@@ -147,6 +142,7 @@ class ShowNew(webapp2.RequestHandler):
         self.response.out.write(template.render({
             'items': [items],
             'caption': 'Uued',
+            'back': '/',
         }))
 
 
@@ -156,11 +152,12 @@ class ShowGroup(webapp2.RequestHandler):
             self.redirect('/')
 
         show = db.Query(Show).filter('path', group).get()
-        caption = '404'
-        favourite = False
-        if show:
-            caption = show.title
-            favourite = '+' if show.key() in CurrentUser().favourites else '-'
+        if not show:
+            self.redirect('/')
+            return
+
+        caption = show.title
+        favourite = '+' if show.key() in CurrentUser().favourites else '-'
 
         items = []
         for i in db.Query(Archive).filter('group', group).order('-date').fetch(1500):
@@ -169,6 +166,7 @@ class ShowGroup(webapp2.RequestHandler):
                 'title': i.title,
                 'info': i.date.strftime('%d.%m.%Y %H:%M'),
                 'type': 'video',
+                'description': i.description,
             })
         if group == 'other':
             items = sorted(items, key=itemgetter('title'))
@@ -179,6 +177,7 @@ class ShowGroup(webapp2.RequestHandler):
             'items': [items],
             'caption': caption,
             'favourite': favourite,
+            'back': 'javascript:history.go(-1);',
         }))
 
     def post(self, group):
